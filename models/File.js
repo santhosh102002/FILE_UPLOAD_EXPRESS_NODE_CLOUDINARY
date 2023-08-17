@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+// const nodemailer = require('nodemailer')
 
 const fileSchema = new mongoose.Schema({
     name:{
@@ -17,6 +18,15 @@ const fileSchema = new mongoose.Schema({
         type:String
     }
 })
+
+// fileSchema.post("save", async (doc)=>{
+// try{
+// console.log("DOC",doc)
+// }
+// catch(err){
+//     console.log(err)
+// }
+// })
 
 
  const File = mongoose.model('File',fileSchema)

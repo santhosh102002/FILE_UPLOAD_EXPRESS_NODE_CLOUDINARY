@@ -5,8 +5,12 @@ const isFileTypeSame = (type,supportedTypes)=>{
     return supportedTypes.includes(type);
     
 }
-const uploadFileToCloudinary = async (file,folder)=>{
+const uploadFileToCloudinary = async (file,folder,quality)=>{
     const options = {folder};
+    options.resource_type ='auto';
+    if(quality){
+        options.quality = quality
+    }
     return await cloudinary.uploader.upload(file.tempFilePath,options);
 }
 
@@ -69,6 +73,53 @@ exports.imageUpload = async (req,res)=>{
             message: "Failed to upload to cloudinary"
         })
     }
+
+
+}
+
+exports.imageSizeReducer = async (req,res)=>{
+    
+    try{
+        const {name,tags,email} = req.body;
+        console.log(name,tags,email)
+        const file = req.files.imageFile;
+    
+        // File type validation
+        const supportedTypes = ['jpg','jpeg','png']
+        const fileType = file.name.split('.')[1].toLowerCase();
+        if(!isFileTypeSame(fileType,supportedTypes)){
+            return res.status(400).json({
+                success: false,
+                message: "File format not supported"
+            })
+    
+        }
+        const response = await uploadFileToCloudinary(file,"santhosh",30);
+        console.log(response)
+        
+        // Entry in db
+        const fileData = await File.create({
+            name,
+            tags,
+            email,
+            imageUrl:response.secure_url
+        })
+        res.status(200).json({
+            success: true,
+            imageUrl:response.secure_url,
+            message: "Successfully uploaded to cloudinary"
+        })
+    
+    
+        }
+        catch(err){
+            console.log(err);
+            res.status(400).json({
+                success: false,
+                message: "Failed to upload to cloudinary"
+            })
+        }
+
 
 
 }

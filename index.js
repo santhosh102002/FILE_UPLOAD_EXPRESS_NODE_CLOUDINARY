@@ -9,7 +9,10 @@ PORT = process.env.PORT
 
 app.use(express.json())
 
-app.use(fileupload())
+app.use(fileupload({
+    useTempFiles: true,
+    tempFileDir: '/tmp/'
+}))
 const db = require('./Config/database.js')
 db()
 

@@ -1,8 +1,8 @@
-const file = require('../models/File');
+const File = require('../models/File');
 const cloudinary = require('cloudinary').v2;
 
 const isFileTypeSame = (type,supportedTypes)=>{
-    return supportedTypes.include(type);
+    return supportedTypes.includes(type);
     
 }
 const uploadFileToCloudinary = async (file,folder)=>{
@@ -31,7 +31,8 @@ exports.localFileUpload = async(req,res)=>{
 exports.imageUpload = async (req,res)=>{
     try{
     const {name,tags,email} = req.body;
-    const file = req.files.imgaeFile;
+    console.log(name,tags,email)
+    const file = req.files.imageFile;
 
     // File type validation
     const supportedTypes = ['jpg','jpeg','png']
@@ -47,9 +48,15 @@ exports.imageUpload = async (req,res)=>{
     console.log(response)
     
     // Entry in db
-    // const 
+    const fileData = await File.create({
+        name,
+        tags,
+        email,
+        imageUrl:response.secure_url
+    })
     res.status(200).json({
         success: true,
+        imageUrl:response.secure_url,
         message: "Successfully uploaded to cloudinary"
     })
 
